@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- html2pdf.js for Premium PDF Export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Native jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -63,7 +63,6 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between text-slate-800 relative pb-16 md:pb-0">
 
-    <!-- MAIN APP WRAPPER -->
     <main class="flex-grow flex items-center justify-center p-4 md:p-6 z-10">
         <div class="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden relative min-h-[640px] flex flex-col justify-between">
             
@@ -83,11 +82,9 @@
 
                 <!-- STEP 1: WELCOME PAGE -->
                 <div id="step-1" class="wizard-step flex flex-col items-center justify-center text-center space-y-6 my-auto w-full py-4">
-                    <!-- Premium House Logo Badge -->
+                    <!-- Premium House Logo Badge on top -->
                     <div class="w-20 h-20 bg-gradient-to-br from-brand-900 to-brand-700 rounded-3xl flex items-center justify-center shadow-xl mb-2 relative overflow-hidden group shrink-0">
-                        <!-- Decorative Golden Spot inside Badge -->
                         <div class="absolute -right-3 -bottom-3 w-10 h-10 bg-gold-400 rounded-full opacity-20"></div>
-                        <!-- Modern House SVG -->
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-10 h-10 text-white relative z-10 transition-transform group-hover:scale-110 duration-300">
                             <path d="M11.47 3.82a.75.75 0 011.06 0l8.69 8.69a.75.75 0 11-1.06 1.06l-.968-.967v7.387a.75.75 0 01-.75.75h-5.5a.75.75 0 01-.75-.75V15h-3v5.25a.75.75 0 01-.75.75h-5.5a.75.75 0 01-.75-.75v-7.387l-.967.967a.75.75 0 01-1.06-1.06l8.69-8.69z" />
                         </svg>
@@ -470,7 +467,7 @@
                                 <span id="res-ansuran" class="text-sm font-black text-slate-800">RM 0.00</span>
                             </div>
                             <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                <span class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Had Had Ansuran</span>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Had Ansuran</span>
                                 <span id="res-had-ansuran" class="text-sm font-black text-slate-800">RM 0.00</span>
                             </div>
                         </div>
@@ -485,7 +482,7 @@
                         <span id="res-wang-beza" class="text-sm font-black text-orange-600">RM 0.00</span>
                     </div>
 
-                    <!-- PDF Action Buttons -->
+                    <!-- Action Buttons -->
                     <div class="pt-2 space-y-2">
                         <button onclick="downloadPDF()" class="w-full py-3.5 bg-brand-900 hover:bg-brand-950 text-white font-bold rounded-2xl shadow-md transition duration-300 flex items-center justify-center space-x-2 text-sm">
                             <i class="fa-solid fa-file-pdf"></i>
@@ -520,124 +517,11 @@
         </div>
     </main>
 
-    <!-- HIDDEN PDF PRINT TEMPLATE (NO AI REFERENCES) -->
-    <div id="pdf-container" class="hidden absolute top-[-9999px] left-[-9999px] bg-white p-10 w-[790px] text-slate-800">
-        <!-- PDF Header -->
-        <div class="flex justify-between items-center border-b-2 border-brand-900 pb-5 mb-6">
-            <div>
-                <h1 class="text-2xl font-black text-brand-900">LPPSA Smart Calculator</h1>
-                <p class="text-[11px] text-slate-500 font-semibold tracking-wide uppercase">Laporan Anggaran Kelayakan Rasmi</p>
-            </div>
-            <div class="text-right">
-                <p class="text-[10px] text-slate-400 font-bold">Tarikh Penjanaan</p>
-                <p id="pdf-date" class="text-xs font-bold text-slate-700"></p>
-            </div>
-        </div>
-
-        <!-- PDF Status Box -->
-        <div id="pdf-status-box" class="p-5 rounded-2xl border mb-6 text-center">
-            <h3 class="text-xs font-extrabold uppercase tracking-widest text-slate-400">Keputusan Penilaian</h3>
-            <h2 id="pdf-status-title" class="text-3xl font-black mt-1">LAYAK</h2>
-            <div id="pdf-reasons-container" class="hidden mt-4 text-left bg-red-50 p-4 border border-red-100 rounded-xl">
-                <span class="block text-xs font-bold text-red-800 uppercase tracking-wider mb-2">Sebab Penolakan:</span>
-                <ul id="pdf-reasons-list" class="list-disc pl-5 text-xs text-red-700 space-y-1 font-medium"></ul>
-            </div>
-            <div id="pdf-action-box" class="hidden mt-4 text-left bg-amber-50 p-4 border border-amber-200 rounded-xl">
-                <span class="block text-xs font-bold text-amber-800 uppercase mb-1">Tindakan Diperlukan:</span>
-                <p id="pdf-action-text" class="text-xs text-amber-700 font-bold"></p>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <!-- PDF Stack 1: Ringkasan Pembiayaan -->
-            <div class="border border-slate-200 rounded-2xl p-5 space-y-3">
-                <h3 class="text-xs font-black text-brand-900 uppercase tracking-widest border-b pb-2">Ringkasan Pembiayaan</h3>
-                <div class="space-y-2">
-                    <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                        <span class="text-slate-500 font-semibold">Kategori:</span>
-                        <span id="pdf-res-kategori" class="font-bold text-slate-800"></span>
-                    </div>
-                    <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                        <span class="text-slate-500 font-semibold">Jenis Pembiayaan:</span>
-                        <span id="pdf-res-jenis" class="font-bold text-slate-800"></span>
-                    </div>
-                    <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                        <span class="text-slate-500 font-semibold">Kelayakan Maksimum:</span>
-                        <span id="pdf-res-kelayakan-maks" class="font-bold text-brand-700"></span>
-                    </div>
-                    <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                        <span class="text-slate-500 font-semibold">Kadar Keuntungan:</span>
-                        <span id="pdf-res-kadar" class="font-bold text-slate-800">4.00%</span>
-                    </div>
-                    <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                        <span class="text-slate-500 font-semibold">Jumlah Pembiayaan Dipohon:</span>
-                        <span id="pdf-res-jumlah-dipohon" class="font-bold text-slate-800"></span>
-                    </div>
-                    <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                        <span class="text-slate-500 font-semibold">Anggaran MRTT:</span>
-                        <span id="pdf-res-mrtt" class="font-bold text-slate-800"></span>
-                    </div>
-                    <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                        <span class="text-slate-500 font-semibold">Anggaran LTHT:</span>
-                        <span id="pdf-res-ltht" class="font-bold text-slate-800"></span>
-                    </div>
-                    <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                        <span class="text-slate-500 font-semibold">Tempoh Pembiayaan:</span>
-                        <span id="pdf-res-tempoh" class="font-bold text-slate-800"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PDF Stack 2: Maklumat Ansuran -->
-            <div class="space-y-4">
-                <div class="border border-slate-200 rounded-2xl p-5 space-y-3">
-                    <h3 class="text-xs font-black text-brand-900 uppercase tracking-widest border-b pb-2">Kiraan Kelayakan Bulanan</h3>
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                            <span class="text-slate-500 font-semibold">Gaji Bersih Pemohon:</span>
-                            <span id="pdf-res-gaji-bersih" class="font-bold text-slate-800"></span>
-                        </div>
-                        <div class="flex justify-between text-xs py-1 border-b border-dashed">
-                            <span class="text-slate-500 font-semibold">Jumlah Pembiayaan Keseluruhan:</span>
-                            <span id="pdf-res-pembiayaan-keseluruhan" class="font-bold text-slate-800"></span>
-                        </div>
-                        <div class="flex justify-between text-sm py-1 font-black">
-                            <span class="text-slate-600">Anggaran Ansuran Bulanan:</span>
-                            <span id="pdf-res-ansuran" class="text-teal-700"></span>
-                        </div>
-                        <div class="flex justify-between text-sm py-1 font-black">
-                            <span class="text-slate-600">Had Ansuran Bulanan:</span>
-                            <span id="pdf-res-had-ansuran" class="text-slate-700"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PDF Wang Beza (Dynamic) -->
-                <div id="pdf-wang-beza-box" class="hidden border border-orange-200 bg-orange-50 rounded-2xl p-4 text-xs">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-orange-800 uppercase">Wang Beza / Tunai Tambahan:</span>
-                        <span id="pdf-res-wang-beza" class="text-sm font-black text-orange-700"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PDF Disclaimer Footer -->
-        <div class="border-t border-slate-200 mt-10 pt-5 text-center">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">PENAFIAN PENTING (DISCLAIMER)</span>
-            <p class="text-[9px] text-slate-400 italic mt-1 leading-relaxed">
-                Anggaran ini adalah untuk rujukan sahaja. Nilai sebenar tertakluk kepada pengiraan rasmi LPPSA dan pihak berkaitan. 
-                Sistem ini merupakan medium panduan pintar simulasi tidak terikat dengan sebarang akta perundangan rasmi LPPSA.
-            </p>
-        </div>
-    </div>
-
     <!-- Application Footer (Desktop decorative) -->
     <footer class="py-4 text-center text-[10px] text-slate-400 font-medium z-10">
         &copy; 2026 LPPSA Smart Calculator. Dibangunkan khusus untuk Kemudahan Penjawat Awam Malaysia.
     </footer>
 
-    <!-- Application Logic Block -->
     <script>
         // Global App State
         const state = {
@@ -1060,7 +944,7 @@
                 }
             }
 
-            // MRTT Compulsory Calculation
+            // MRTT Compulsory Calculation based on Age Scale
             let mrttRate = 0.0080;
             if (state.umur < 25) mrttRate = 0.0028;
             else if (state.umur <= 30) mrttRate = 0.0028;
@@ -1182,69 +1066,6 @@
             } else {
                 wangBezaContainer.classList.add('hidden');
             }
-
-            populatePdfTemplate();
-        }
-
-        function populatePdfTemplate() {
-            const today = new Date();
-            document.getElementById('pdf-date').innerText = today.toLocaleDateString('ms-MY', {
-                year: 'numeric', month: 'long', day: 'numeric'
-            });
-
-            const statusBox = document.getElementById('pdf-status-box');
-            const statusTitle = document.getElementById('pdf-status-title');
-            const reasonsContainer = document.getElementById('pdf-reasons-container');
-            const reasonsList = document.getElementById('pdf-reasons-list');
-            const actionBox = document.getElementById('pdf-action-box');
-            const actionText = document.getElementById('pdf-action-text');
-
-            if (state.status === 'LAYAK') {
-                statusBox.className = "p-5 rounded-2xl border border-teal-200 bg-teal-50 text-center mb-6";
-                statusTitle.className = "text-3xl font-black mt-1 text-teal-800";
-                statusTitle.innerText = "LAYAK";
-                reasonsContainer.classList.add('hidden');
-            } else {
-                statusBox.className = "p-5 rounded-2xl border border-red-200 bg-red-50 text-center mb-6";
-                statusTitle.className = "text-3xl font-black mt-1 text-red-800";
-                statusTitle.innerText = "TIDAK LAYAK";
-                
-                reasonsList.innerHTML = '';
-                state.reasons.forEach(r => {
-                    const li = document.createElement('li');
-                    li.innerText = r;
-                    reasonsList.appendChild(li);
-                });
-                reasonsContainer.classList.remove('hidden');
-            }
-
-            if (state.tindakanDiperlukan) {
-                actionBox.classList.remove('hidden');
-                actionText.innerText = "Perlu Selesaikan Pembiayaan Pertama Terlebih Dahulu sebelum memohon pembiayaan ini.";
-            } else {
-                actionBox.classList.add('hidden');
-            }
-
-            document.getElementById('pdf-res-kategori').innerText = `Pembiayaan ${state.kategori}`;
-            document.getElementById('pdf-res-jenis').innerText = state.currentJenis;
-            document.getElementById('pdf-res-kelayakan-maks').innerText = formatCurrency(state.kelayakanMaksimum);
-            document.getElementById('pdf-res-jumlah-dipohon').innerText = formatCurrency(state.jumlahDipohon);
-            document.getElementById('pdf-res-mrtt').innerText = formatCurrency(state.mrtt);
-            document.getElementById('pdf-res-ltht').innerText = (state.ltht > 0) ? formatCurrency(state.ltht) : "Tidak Berkenaan";
-            document.getElementById('pdf-res-tempoh').innerText = `${state.tenureYears} Tahun (${state.tenureMonths} Bulan)`;
-            
-            document.getElementById('pdf-res-gaji-bersih').innerText = formatCurrency(state.netPay);
-            document.getElementById('pdf-res-pembiayaan-keseluruhan').innerText = formatCurrency(state.jumlahKeseluruhan);
-            document.getElementById('pdf-res-ansuran').innerText = formatCurrency(state.ansuranBulanan);
-            document.getElementById('pdf-res-had-ansuran').innerText = formatCurrency(state.hadAnsuran);
-
-            const pdfWangBezaBox = document.getElementById('pdf-wang-beza-box');
-            if (state.wangBeza > 0) {
-                pdfWangBezaBox.classList.remove('hidden');
-                document.getElementById('pdf-res-wang-beza').innerText = formatCurrency(state.wangBeza);
-            } else {
-                pdfWangBezaBox.classList.add('hidden');
-            }
         }
 
         function formatCurrency(value) {
@@ -1255,21 +1076,189 @@
         }
 
         function downloadPDF() {
-            const element = document.getElementById('pdf-container');
-            const cleanedName = "Laporan_Kelayakan_LPPSA";
-            
-            const opt = {
-                margin:       10,
-                filename:     `${cleanedName}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            element.classList.remove('hidden');
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.classList.add('hidden');
-            });
+            if (!state.status) {
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4'); // Standard A4 (210mm x 297mm)
+
+            // 1. Solid Premium Teal Banner Top
+            doc.setFillColor(15, 76, 92); // Deep Teal (#0f4c5c)
+            doc.rect(0, 0, 210, 38, 'F');
+
+            // Golden Accent Line below Teal banner
+            doc.setFillColor(245, 158, 11); // Gold (#f59e0b)
+            doc.rect(0, 38, 210, 2, 'F');
+
+            // Title
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(22);
+            doc.setTextColor(255, 255, 255);
+            doc.text("Laporan Kelayakan LPPSA", 15, 18);
+
+            // Subtitle
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(204, 251, 241); // Light Teal text color
+            doc.text("Anggaran Awal Pembiayaan LPPSA", 15, 25);
+
+            // Print Date Right-aligned
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('ms-MY', { year: 'numeric', month: 'long', day: 'numeric' });
+            doc.setFontSize(9);
+            doc.setTextColor(255, 255, 255);
+            doc.text(`Tarikh Penjanaan: ${dateStr}`, 195, 23, { align: 'right' });
+
+            let y = 50;
+
+            // 2. Status Badge Box in PDF
+            if (state.status === 'LAYAK') {
+                doc.setFillColor(240, 253, 250); // Light Green Teal
+                doc.rect(15, y, 180, 16, 'F');
+                doc.setDrawColor(13, 148, 136); // Teal outline
+                doc.setLineWidth(0.3);
+                doc.rect(15, y, 180, 16, 'D');
+
+                doc.setFont("Helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(15, 118, 110); // Deep Teal text
+                doc.text("STATUS KELAYAKAN: LAYAK", 20, y + 10);
+                y += 24;
+            } else {
+                const boxHeight = 16 + (state.reasons.length * 5.5);
+                doc.setFillColor(254, 242, 242); // Light red
+                doc.rect(15, y, 180, boxHeight, 'F');
+                doc.setDrawColor(220, 38, 38); // Red outline
+                doc.setLineWidth(0.3);
+                doc.rect(15, y, 180, boxHeight, 'D');
+
+                doc.setFont("Helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(185, 28, 28); // Bold red text
+                doc.text("STATUS KELAYAKAN: TIDAK LAYAK", 20, y + 8.5);
+
+                doc.setFont("Helvetica", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(153, 27, 27);
+                state.reasons.forEach((reason, index) => {
+                    doc.text(`- ${reason}`, 20, y + 14.5 + (index * 5.5));
+                });
+                y += boxHeight + 8;
+            }
+
+            // 3. Actions Required Notice
+            if (state.tindakanDiperlukan) {
+                doc.setFillColor(255, 251, 235); // Light Amber
+                doc.rect(15, y, 180, 13, 'F');
+                doc.setDrawColor(217, 119, 6); // Amber border
+                doc.setLineWidth(0.3);
+                doc.rect(15, y, 180, 13, 'D');
+
+                doc.setFont("Helvetica", "bold");
+                doc.setFontSize(9.5);
+                doc.setTextColor(146, 64, 14); // Brown-amber text
+                doc.text("Tindakan Diperlukan:", 20, y + 8.5);
+                doc.setFont("Helvetica", "normal");
+                doc.text("Perlu Selesaikan Pembiayaan Pertama Terlebih Dahulu", 58, y + 8.5);
+                y += 19;
+            }
+
+            // Simple row drawer helper
+            function drawRow(label, value, rowY, highlight = false) {
+                doc.setFont("Helvetica", "normal");
+                doc.setFontSize(9.5);
+                doc.setTextColor(71, 85, 105); // Slate 600
+                doc.text(label, 18, rowY + 5);
+
+                doc.setFont("Helvetica", "bold");
+                if (highlight) {
+                    doc.setTextColor(13, 148, 136); // Teal highlight
+                } else {
+                    doc.setTextColor(15, 23, 42); // Slate 900
+                }
+                doc.text(value, 192, rowY + 5, { align: 'right' });
+
+                doc.setDrawColor(241, 245, 249); // Slate 100
+                doc.setLineWidth(0.3);
+                doc.line(15, rowY + 8, 195, rowY + 8);
+                return rowY + 8;
+            }
+
+            // 4. Section 1 Table: Ringkasan Pembiayaan
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.setTextColor(15, 76, 92); // Deep Teal
+            doc.text("1. RINGKASAN PEMBIAYAAN", 15, y);
+            y += 4;
+
+            y = drawRow("Kategori Pembiayaan", `Pembiayaan ${state.kategori}`, y);
+            y = drawRow("Jenis Pembiayaan", state.currentJenis, y);
+            y = drawRow("Kelayakan Maksimum", formatCurrency(state.kelayakanMaksimum), y);
+            y = drawRow("Kadar Keuntungan", "4.00%", y);
+            y = drawRow("Jumlah Pembiayaan Keseluruhan", formatCurrency(state.jumlahKeseluruhan), y);
+            y = drawRow("Anggaran MRTT", formatCurrency(state.mrtt), y);
+            y = drawRow("Anggaran LTHT", (state.ltht > 0) ? formatCurrency(state.ltht) : "Tidak Berkenaan", y);
+            y = drawRow("Tempoh Pembiayaan", `${state.tenureYears} Tahun (${state.tenureMonths} Bulan)`, y);
+
+            y += 6;
+
+            // 5. Section 2 Table: Maklumat Ansuran
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.setTextColor(15, 76, 92);
+            doc.text("2. MAKLUMAT ANSURAN", 15, y);
+            y += 4;
+
+            y = drawRow("Ansuran Bulanan", formatCurrency(state.ansuranBulanan), y, true);
+            y = drawRow("Had Ansuran Bulanan", formatCurrency(state.hadAnsuran), y);
+
+            y += 6;
+
+            // 6. Section 3: Wang Beza (Dynamic notice)
+            if (state.wangBeza > 0) {
+                doc.setFillColor(255, 247, 237); // Light Orange
+                doc.rect(15, y, 180, 14, 'F');
+                doc.setDrawColor(249, 115, 22); // Orange border
+                doc.setLineWidth(0.3);
+                doc.rect(15, y, 180, 14, 'D');
+
+                doc.setFont("Helvetica", "bold");
+                doc.setFontSize(9.5);
+                doc.setTextColor(194, 65, 12);
+                doc.text("WANG BEZA / TUNAI TAMBAHAN:", 20, y + 9);
+                doc.text(formatCurrency(state.wangBeza), 190, y + 9, { align: 'right' });
+                y += 20;
+            }
+
+            // 7. System Notes
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(8.5);
+            doc.setTextColor(100, 116, 139); // Slate 500
+            doc.text("Catatan Sistem:", 15, y + 3);
+
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(8.5);
+            doc.setTextColor(148, 163, 184); // Slate 400
+            doc.text("Kalkulasi di atas dipandu oleh polisi semasa Lembaga Pembiayaan Perumahan Sektor Awam (LPPSA).", 15, y + 7);
+
+            // 8. Disclaimer
+            doc.setDrawColor(226, 232, 240); // Slate 200
+            doc.setLineWidth(0.3);
+            doc.line(15, 274, 195, 274);
+
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(8.5);
+            doc.setTextColor(148, 163, 184); // Slate 400
+            doc.text("PENAFIAN PENTING", 105, 280, { align: 'center' });
+
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(8);
+            doc.setTextColor(160, 174, 192); // Slate 350
+            doc.text("Dokumen ini adalah laporan anggaran awal sahaja. Nilai sebenar tertakluk kepada pengiraan rasmi LPPSA dan pihak berkaitan.", 105, 284, { align: 'center' });
+
+            // Download Document
+            doc.save("Laporan_Kelayakan_LPPSA.pdf");
         }
 
         function resetCalculator() {
