@@ -4,756 +4,594 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LPPSA Smart Calculator</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS for Premium Design -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Google Fonts (Inter) -->
+    <!-- Google Fonts for Professional Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Vue 3 Setup -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- html2pdf.js for Client-Side PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #f8fafc;
         }
-        /* Custom single-select radio styling to look like premium cards */
-        .premium-radio:checked + label {
-            border-color: #0f766e;
-            background-color: #f0fdfa;
-            box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.1);
-        }
-        @media print {
-            body { background: white; color: black; }
-            .no-print { display: none !important; }
-            .print-card { border: 1px solid #e2e8f0; box-shadow: none !important; page-break-inside: avoid; }
-        }
+        /* Custom scrollbar hiding for slick interface */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="flex justify-center min-h-screen antialiased text-slate-800">
+<body class="antialiased text-slate-800">
 
-    <!-- Mobile Container Frame -->
-    <div class="w-full max-w-md bg-white min-h-screen shadow-xl flex flex-col relative overflow-x-hidden border-x border-slate-100">
+<div id="app" class="min-h-screen flex justify-center items-stretch bg-slate-100">
+    <!-- Mobile-First Container Frame -->
+    <main class="w-full max-w-md bg-white shadow-2xl min-h-screen flex flex-col justify-between relative overflow-x-hidden">
         
-        <!-- Header Bar -->
-        <header class="bg-teal-700 text-white py-4 px-6 sticky top-0 z-50 flex items-center shadow-md">
-            <span class="font-bold text-lg tracking-wide">LPPSA Smart Calculator</span>
-            <span class="ml-auto text-xs bg-teal-600 px-2 py-1 rounded text-teal-100">Sistem Perunding</span>
+        <!-- Header (Sticky navigation bar) -->
+        <header v-if="step > 1" class="bg-gradient-to-r from-teal-700 to-emerald-600 text-white px-5 py-4 sticky top-0 z-50 shadow-md flex items-center justify-between">
+            <button @click="prevStep" class="flex items-center gap-1 text-teal-100 hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                <span class="text-sm font-semibold">Kembali</span>
+            </button>
+            <h1 class="text-xs tracking-wider uppercase font-extrabold opacity-90">Sesi Konsultasi LPPSA</h1>
+            <span class="text-xs bg-teal-800/60 px-2 py-1 rounded-full font-mono text-emerald-200">Langkah {{ step - 1 }}/7</span>
         </header>
 
-        <!-- Main Dynamic Screen Content Area -->
-        <main class="flex-1 p-6 flex flex-col justify-between pb-24">
+        <!-- Dynamic Content Body -->
+        <div class="flex-1 p-6 flex flex-col justify-start">
             
-            <!-- STEP 1: WELCOME PAGE -->
-            <div id="step-1" class="step-view flex flex-col justify-center items-center text-center my-auto py-10">
-                <div class="w-20 h-20 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 text-teal-600 shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
+            <!-- STEP 1: Welcome Page -->
+            <div v-if="step === 1" class="flex-1 flex flex-col justify-between items-center text-center py-10">
+                <div class="my-auto space-y-6">
+                    <div class="inline-flex p-4 bg-teal-50 text-teal-600 rounded-3xl shadow-inner border border-teal-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">LPPSA <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-500">Smart Calculator</span></h1>
+                    <p class="text-slate-500 text-sm max-w-xs mx-auto leading-relaxed">Sistem panduan pakar penilai kelayakan pembiayaan perumahan khas untuk Penjawat Awam Malaysia.</p>
                 </div>
-                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">LPPSA Smart Calculator</h1>
-                <p class="text-slate-500 mt-3 max-w-xs text-sm leading-relaxed">
-                    Panduan simulasi kelayakan pembiayaan perumahan rasmi untuk Penjawat Awam Malaysia secara pintar.
-                </p>
-                <div class="w-full mt-12">
-                    <button onclick="goToStep(2)" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg shadow-teal-600/20 transition active:scale-[0.98]">
-                        Mula Kira
+                <button @click="nextStep" class="w-full bg-gradient-to-r from-teal-600 to-emerald-500 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-teal-600/30 hover:opacity-95 transform active:scale-98 transition duration-150">
+                    Mula Kira
+                </button>
+            </div>
+
+            <!-- STEP 2: Choose Calculation Mode -->
+            <div v-if="step === 2" class="space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Mod Pengiraan</h2>
+                    <p class="text-xs text-slate-500 mt-1">Pilih kaedah input kewangan yang anda selesa.</p>
+                </div>
+                <div class="grid grid-cols-1 gap-4">
+                    <button @click="form.calcMode = 'ringkas'; nextStep();" class="p-5 border-2 rounded-2xl text-left transition duration-200" :class="form.calcMode === 'ringkas' ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-500/20' : 'border-slate-200 hover:border-slate-300'">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-800">Kiraan Ringkas</span>
+                            <span class="h-5 w-5 rounded-full border-4 flex items-center justify-center" :class="form.calcMode === 'ringkas' ? 'border-teal-600 bg-white' : 'border-slate-300'"></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">Hanya perlukan nilai Gaji Bersih akhir slip gaji anda.</p>
+                    </button>
+                    <button @click="form.calcMode = 'terperinci'; nextStep();" class="p-5 border-2 rounded-2xl text-left transition duration-200" :class="form.calcMode === 'terperinci' ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-500/20' : 'border-slate-200 hover:border-slate-300'">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-800">Kiraan Terperinci</span>
+                            <span class="h-5 w-5 rounded-full border-4 flex items-center justify-center" :class="form.calcMode === 'terperinci' ? 'border-teal-600 bg-white' : 'border-slate-300'"></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">Pengiraan automatik gaji bersih berdasarkan pecahan slip pendapatan rasmi.</p>
                     </button>
                 </div>
             </div>
 
-            <!-- STEP 2: CHOOSE CALCULATION MODE -->
-            <div id="step-2" class="step-view hidden space-y-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-900">Mod Pengiraan</h2>
-                    <p class="text-xs text-slate-500 mt-1">Pilih kaedah penentuan pendapatan bersih anda.</p>
-                </div>
-
-                <div class="space-y-4">
+            <!-- STEP 3: Financial Input (Conditional) -->
+            <div v-if="step === 3" class="space-y-6">
+                <div v-if="form.calcMode === 'ringkas'" class="space-y-5">
                     <div>
-                        <input type="radio" id="mode-ringkas" name="calc-mode" value="ringkas" class="opacity-0 absolute w-0 h-0 premium-radio" checked onchange="validateStep2()">
-                        <label for="mode-ringkas" class="flex flex-col p-4 bg-white border-2 border-slate-200 rounded-xl cursor-pointer transition hover:border-teal-500">
-                            <span class="font-bold text-slate-800">Kiraan Ringkas</span>
-                            <span class="text-xs text-slate-500 mt-1">Gunakan amaun Gaji Bersih akhir dari slip gaji anda secara terus.</span>
-                        </label>
+                        <h2 class="text-2xl font-bold text-slate-900">Maklumat Gaji</h2>
+                        <p class="text-xs text-slate-500 mt-1">Masukkan angka gaji bersih muktamad anda.</p>
                     </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Gaji Bersih (RM)</label>
+                        <div class="relative rounded-2xl shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="text-slate-400 font-medium text-sm">RM</span>
+                            </div>
+                            <input type="number" v-model.number="form.gajiBersihInput" min="0" placeholder="0.00" class="w-full pl-12 pr-4 py-4 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 font-semibold text-lg transition">
+                        </div>
+                    </div>
+                </div>
 
+                <div v-if="form.calcMode === 'terperinci'" class="space-y-5">
                     <div>
-                        <input type="radio" id="mode-terperinci" name="calc-mode" value="terperinci" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="validateStep2()">
-                        <label for="mode-terperinci" class="flex flex-col p-4 bg-white border-2 border-slate-200 rounded-xl cursor-pointer transition hover:border-teal-500">
-                            <span class="font-bold text-slate-800">Kiraan Terperinci</span>
-                            <span class="text-xs text-slate-500 mt-1">Kira Gaji Bersih automatik melalui input gaji kasar, elaun, dan potongan.</span>
-                        </label>
+                        <h2 class="text-2xl font-bold text-slate-900">Butiran Pendapatan</h2>
+                        <p class="text-xs text-slate-500 mt-1">Sila isi mengikut item slip gaji terkini anda.</p>
+                    </div>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Gaji Kasar (RM)</label>
+                            <input type="number" v-model.number="form.gajiKasar" min="0" placeholder="0.00" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 font-medium">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Jumlah Elaun (RM)</label>
+                            <input type="number" v-model.number="form.jumlahElaun" min="0" placeholder="0.00" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 font-medium">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Potongan Cukai & KWSP (RM)</label>
+                            <input type="number" v-model.number="form.potonganCukaiKwsp" min="0" placeholder="0.00" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 font-medium">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Potongan ANGKASA / Koperasi (RM)</label>
+                            <input type="number" v-model.number="form.potonganAngkasa" min="0" placeholder="0.00" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 font-medium">
+                        </div>
+                    </div>
+                    <!-- Realtime derived math info -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Formulasi Gaji Bersih:</span>
+                        <span class="text-base font-bold text-teal-700">RM {{ formatCalculatedNetPay }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- STEP 3: KIRAAN RINGKAS PAGE -->
-            <div id="step-3" class="step-view hidden space-y-6">
+            <!-- STEP 4: Applicant Info -->
+            <div v-if="step === 4" class="space-y-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-900">Kiraan Ringkas</h2>
-                    <p class="text-xs text-slate-500 mt-1">Masukkan pendapatan bersih akhir anda.</p>
+                    <h2 class="text-2xl font-bold text-slate-900">Profil Pemohon</h2>
+                    <p class="text-xs text-slate-500 mt-1">Data profil diperlukan bagi penetapan kadar perlindungan MRTT.</p>
                 </div>
-
-                <div class="space-y-2">
-                    <label class="block text-xs font-semibold text-slate-700 tracking-wider uppercase">Gaji Bersih (RM)</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm font-medium">RM</span>
-                        <input type="number" id="input-gaji-bersih" min="0" placeholder="0.00" oninput="validateStep3()" class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white text-base font-semibold">
-                    </div>
-                </div>
-            </div>
-
-            <!-- STEP 4: KIRAAN TERPERINCI PAGE -->
-            <div id="step-4" class="step-view hidden space-y-5">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-900">Kiraan Terperinci</h2>
-                    <p class="text-xs text-slate-500 mt-1">Isi butiran pendapatan dan potongan bulanan rasmi anda.</p>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase">Gaji Kasar (RM)</label>
-                        <div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm">RM</span>
-                            <input type="number" id="input-gaji-kasar" min="0" placeholder="0.00" oninput="validateStep4()" class="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:bg-white font-medium">
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase">Jumlah Elaun (RM)</label>
-                        <div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm">RM</span>
-                            <input type="number" id="input-elaun" min="0" placeholder="0.00" oninput="validateStep4()" class="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:bg-white font-medium">
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase">Potongan Cukai dan KWSP (RM)</label>
-                        <div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm">RM</span>
-                            <input type="number" id="input-cukai-kwsp" min="0" placeholder="0.00" oninput="validateStep4()" class="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:bg-white font-medium">
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase">Potongan ANGKASA / Koperasi (RM)</label>
-                        <div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm">RM</span>
-                            <input type="number" id="input-angkasa" min="0" placeholder="0.00" oninput="validateStep4()" class="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:bg-white font-medium">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STEP 5: APPLICANT INFO -->
-            <div id="step-5" class="step-view hidden space-y-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-900">Maklumat Pemohon</h2>
-                    <p class="text-xs text-slate-500 mt-1">Data profil asas untuk penentuan faktor kadar perlindungan.</p>
-                </div>
-
                 <div class="space-y-5">
                     <div class="space-y-2">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase">Umur Pemohon (Tahun)</label>
-                        <input type="number" id="input-umur" min="1" max="100" placeholder="Contoh: 32" oninput="validateStep5()" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:bg-white font-medium">
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Umur Pemohon</label>
+                        <input type="number" v-model.number="form.umur" min="18" max="85" placeholder="Contoh: 32" class="w-full px-4 py-4 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 font-semibold text-lg">
                     </div>
-
                     <div class="space-y-2">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase">Jantina</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <input type="radio" id="gender-l" name="gender" value="Lelaki" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="validateStep5()">
-                                <label for="gender-l" class="block text-center py-3 border-2 border-slate-200 rounded-xl cursor-pointer font-medium text-sm">Lelaki</label>
-                            </div>
-                            <div>
-                                <input type="radio" id="gender-p" name="gender" value="Perempuan" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="validateStep5()">
-                                <label for="gender-p" class="block text-center py-3 border-2 border-slate-200 rounded-xl cursor-pointer font-medium text-sm">Perempuan</label>
-                            </div>
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Jantina</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button @click="form.jantina = 'Lelaki'" class="py-3 border-2 rounded-xl font-bold text-sm transition" :class="form.jantina === 'Lelaki' ? 'border-teal-600 bg-teal-50 text-teal-800' : 'border-slate-200 text-slate-600 hover:bg-slate-50'">Lelaki</button>
+                            <button @click="form.jantina = 'Perempuan'" class="py-3 border-2 rounded-xl font-bold text-sm transition" :class="form.jantina === 'Perempuan' ? 'border-teal-600 bg-teal-50 text-teal-800' : 'border-slate-200 text-slate-600 hover:bg-slate-50'">Perempuan</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- STEP 6: LPPSA HISTORY -->
-            <div id="step-6" class="step-view hidden space-y-6">
+            <!-- STEP 5: LPPSA History -->
+            <div v-if="step === 5" class="space-y-6">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-900">Sejarah Pembiayaan</h2>
                     <p class="text-xs text-slate-500 mt-1">Berapa kali anda pernah menggunakan pembiayaan LPPSA?</p>
                 </div>
-
                 <div class="space-y-3">
-                    <div>
-                        <input type="radio" id="hist-0" name="lppsa-history" value="0" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="handleHistorySelection()">
-                        <label for="hist-0" class="block p-4 border-2 border-slate-200 rounded-xl cursor-pointer font-semibold text-sm">Belum Pernah</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="hist-1" name="lppsa-history" value="1" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="handleHistorySelection()">
-                        <label for="hist-1" class="block p-4 border-2 border-slate-200 rounded-xl cursor-pointer font-semibold text-sm">Sudah Guna 1 Kali</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="hist-2" name="lppsa-history" value="2" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="handleHistorySelection()">
-                        <label for="hist-2" class="block p-4 border-2 border-slate-200 rounded-xl cursor-pointer font-semibold text-sm">Sudah Guna 2 Kali</label>
-                    </div>
+                    <button v-for="opt in lppsaHistoryOptions" :key="opt.value" @click="form.historyCount = opt.value" class="w-full p-4 border-2 rounded-2xl text-left transition flex justify-between items-center" :class="form.historyCount === opt.value ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-500/20' : 'border-slate-200 hover:border-slate-300'">
+                        <span class="font-bold text-sm text-slate-800">{{ opt.label }}</span>
+                        <span class="h-5 w-5 rounded-full border-4" :class="form.historyCount === opt.value ? 'border-teal-600 bg-white' : 'border-slate-300'"></span>
+                    </button>
                 </div>
 
-                <!-- Sub-section if Guna 1 Kali -->
-                <div id="prev-loan-type-container" class="hidden pt-4 border-t border-slate-100 space-y-3">
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide">Sila pilih Pembiayaan LPPSA yang TELAH digunakan sebelum ini:</label>
-                    <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                        <div id="prev-options-list" class="space-y-2"></div>
+                <!-- Nested logic selection if 1 Time Used -->
+                <div v-if="form.historyCount === '1'" class="pt-4 border-t border-slate-200 space-y-3">
+                    <label class="text-xs font-bold text-slate-700 uppercase tracking-wide block">Sila pilih Pembiayaan LPPSA yang TELAH digunakan sebelum ini:</label>
+                    <div class="max-h-60 overflow-y-auto pr-1 space-y-2 border border-slate-100 rounded-xl p-2 bg-slate-50/50">
+                        <button v-for="(desc, code) in loanTypes" :key="code" @click="form.previousType = code" class="w-full p-3 bg-white border rounded-xl text-left text-xs transition flex gap-3 items-start" :class="form.previousType === code ? 'border-teal-600 ring-1 ring-teal-500/30' : 'border-slate-200'">
+                            <span class="font-bold text-teal-700 shrink-0">{{ code }}</span>
+                            <span class="text-slate-600 font-medium">{{ desc }}</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- STEP 7: CURRENT FINANCING SELECTION -->
-            <div id="step-7" class="step-view hidden space-y-6">
+            <!-- STEP 6: Current Financing Selection -->
+            <div v-if="step === 6" class="space-y-6">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-900">Permohonan Baru</h2>
                     <p class="text-xs text-slate-500 mt-1">Sila PILIH Pembiayaan yang Ingin Dipohon:</p>
                 </div>
+                <div class="max-h-64 overflow-y-auto pr-1 space-y-2 border border-slate-100 rounded-xl p-2 bg-slate-50/50">
+                    <button v-for="(desc, code) in loanTypes" :key="code" @click="form.currentType = code" class="w-full p-3 bg-white border rounded-xl text-left text-xs transition flex gap-3 items-start" :class="form.currentType === code ? 'border-teal-600 ring-1 ring-teal-500/30' : 'border-slate-200'">
+                        <span class="font-bold text-teal-700 shrink-0">{{ code }}</span>
+                        <span class="text-slate-600 font-medium">{{ desc }}</span>
+                    </button>
+                </div>
 
-                <div class="space-y-2 max-h-72 overflow-y-auto pr-1" id="current-options-list"></div>
-
-                <!-- Sub-section for J5 Settlement Details -->
-                <div id="j5-settlement-container" class="hidden pt-4 border-t border-slate-100 space-y-3">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Settlement Untuk:</label>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <input type="radio" id="set-rumah" name="settlement-target" value="Rumah" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="validateStep7()">
-                            <label for="set-rumah" class="block text-center py-3 border-2 border-slate-200 rounded-xl cursor-pointer text-sm font-medium">Rumah</label>
-                        </div>
-                        <div>
-                            <input type="radio" id="set-tanah" name="settlement-target" value="Tanah" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="validateStep7()">
-                            <label for="set-tanah" class="block text-center py-3 border-2 border-slate-200 rounded-xl cursor-pointer text-sm font-medium">Tanah</label>
-                        </div>
+                <!-- If Jenis 5 context addition -->
+                <div v-if="form.currentType === 'Jenis 5'" class="pt-3 border-t border-slate-200 space-y-2">
+                    <label class="text-xs font-bold text-slate-700 uppercase tracking-wide block">Settlement Untuk:</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button @click="form.j5SettlementFor = 'Rumah'" class="py-2.5 border rounded-xl text-xs font-bold transition" :class="form.j5SettlementFor === 'Rumah' ? 'border-teal-600 bg-teal-50 text-teal-800' : 'border-slate-200 text-slate-600'">Rumah</button>
+                        <button @click="form.j5SettlementFor = 'Tanah'" class="py-2.5 border rounded-xl text-xs font-bold transition" :class="form.j5SettlementFor === 'Tanah' ? 'border-teal-600 bg-teal-50 text-teal-800' : 'border-slate-200 text-slate-600'">Tanah</button>
                     </div>
                 </div>
             </div>
 
-            <!-- STEP 8: LOAN INFORMATION PAGE -->
-            <div id="step-8" class="step-view hidden space-y-6">
+            <!-- STEP 7: Loan Information Page -->
+            <div v-if="step === 7" class="space-y-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-900">Maklumat Pembiayaan</h2>
-                    <p class="text-xs text-slate-500 mt-1">Masukkan parameter penilaian nilai hartanah pasaran berkaitan.</p>
+                    <h2 class="text-2xl font-bold text-slate-900">Nilai Pembiayaan</h2>
+                    <p class="text-xs text-slate-500 mt-1">Masukkan anggaran saiz permohonan pembiayaan anda.</p>
                 </div>
-
                 <div class="space-y-4">
                     <div class="space-y-2">
-                        <label id="dynamic-property-label" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Harga Rumah / Nilai Projek</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm font-medium">RM</span>
-                            <input type="number" id="input-property-value" min="0" disabled value="0" class="w-full pl-12 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-400 font-semibold cursor-not-allowed">
-                        </div>
-                        <p class="text-[11px] text-slate-400">Nota: Nilai asas penilaian automatik sistem mengikut jumlah dipohon.</p>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Jumlah Pembiayaan Dipohon (RM)</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm font-medium">RM</span>
-                            <input type="number" id="input-loan-applied" min="1" placeholder="0.00" oninput="validateStep8()" class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:bg-white text-base font-semibold">
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider block">{{ dynamicLoanLabel }}</label>
+                        <div class="relative rounded-2xl shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="text-slate-400 font-medium text-sm">RM</span>
+                            </div>
+                            <input type="number" v-model.number="form.loanRequested" min="0" placeholder="0.00" class="w-full pl-12 pr-4 py-4 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 font-semibold text-lg">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- STEP 9: RESULT PAGE -->
-            <div id="step-9" class="step-view hidden space-y-6 printable-area">
-                <div class="text-center pb-2 border-b border-slate-100 no-print">
-                    <h2 class="text-2xl font-bold text-slate-900">Keputusan Kelayakan</h2>
-                    <p class="text-xs text-slate-500">Hasil rumusan algoritma parameter perunding LPPSA.</p>
+            <!-- STEP 8: Result Page Presentation -->
+            <div v-if="step === 8" id="pdf-container" class="space-y-6">
+                <div class="text-center">
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Keputusan Kelayakan</h2>
+                    <p class="text-xs text-slate-400 font-medium mt-0.5">Penilaian Automatik Polisi LPPSA</p>
                 </div>
 
-                <!-- MAIN STATUS CARD -->
-                <div id="status-card-box" class="p-5 rounded-2xl text-center shadow-sm border print-card">
-                    <span class="text-xs font-bold tracking-widest uppercase block text-slate-500 mb-1">Status Kelayakan</span>
-                    <div id="res-status-text" class="text-3xl font-black tracking-tight">LAYAK</div>
+                <!-- Main Status Banner Component -->
+                <div :class="results.status === 'LAYAK' ? 'bg-emerald-50 border-2 border-emerald-500 text-emerald-900' : 'bg-rose-50 border-2 border-rose-500 text-rose-900'" class="rounded-3xl p-5 text-center shadow-sm">
+                    <p class="text-xs font-bold uppercase tracking-widest opacity-70">Status Kelayakan</p>
+                    <h3 class="text-3xl font-black mt-1 tracking-tight">{{ results.status }}</h3>
                     
                     <!-- Reasons if TIDAK LAYAK -->
-                    <div id="res-reasons-box" class="hidden mt-3 text-left p-3 bg-red-50 text-red-800 rounded-xl text-xs space-y-1 border border-red-100">
-                        <span class="font-bold block">Sebab Penolakan:</span>
-                        <ul id="res-reasons-list" class="list-disc list-inside space-y-0.5"></ul>
+                    <div v-if="results.status === 'TIDAK LAYAK' && results.reasons.length > 0" class="mt-3 text-left border-t border-rose-200/50 pt-3 space-y-1">
+                        <p class="text-xs font-bold text-rose-800">Sebab Penolakan:</p>
+                        <ul class="list-disc pl-4 text-xs text-rose-700 space-y-1 font-medium">
+                            <li v-for="r in results.reasons" :key="r">{{ r }}</li>
+                        </ul>
                     </div>
                 </div>
 
-                <!-- TINDAKAN DIPERLUKAN WARNING BOX -->
-                <div id="res-warning-box" class="hidden p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-1 print-card">
-                    <div class="flex items-center space-x-2 text-amber-800 font-bold text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        <span>Tindakan Diperlukan</span>
-                    </div>
-                    <p class="text-xs text-amber-700 pl-6 font-medium">Perlu Selesaikan Pembiayaan Pertama Terlebih Dahulu</p>
-                </div>
-
-                <!-- WANG BEZA BOX -->
-                <div id="res-wangbeza-box" class="hidden p-4 bg-rose-50 border border-rose-200 rounded-xl flex justify-between items-center print-card">
-                    <span class="text-xs font-bold text-rose-900 uppercase">Wang Beza Diperlukan</span>
-                    <span id="res-wangbeza-val" class="font-extrabold text-rose-700 text-base">RM 0.00</span>
-                </div>
-
-                <!-- STACK 1: RINGKASAN PEMBIAYAIAN -->
-                <div class="space-y-3">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ringkasan Pembiayaan</h3>
-                    <div class="bg-slate-50 rounded-2xl p-4 space-y-2.5 text-xs print-card">
-                        <div class="flex justify-between"><span class="text-slate-500">Kategori Pembiayaan</span><span id="res-kategori" class="font-semibold text-slate-800">-</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Jenis Pembiayaan</span><span id="res-jenis" class="font-semibold text-slate-800 text-right max-w-[200px] truncate">-</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Kelayakan Maksimum</span><span id="res-max-elig" class="font-bold text-teal-700">-</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Kadar Keuntungan</span><span id="res-rate" class="font-semibold text-slate-800">-</span></div>
-                        <div class="flex justify-between pt-2 border-t border-slate-200/60 font-bold"><span class="text-slate-700">Jumlah Pembiayaan Keseluruhan</span><span id="res-total-loan" class="text-slate-900">-</span></div>
-                        <div class="flex justify-between pl-3 text-slate-500"><span>• Anggaran MRTT</span><span id="res-mrtt">-</span></div>
-                        <div class="flex justify-between pl-3 text-slate-500"><span>• Anggaran LTHT</span><span id="res-ltht">-</span></div>
-                        <div class="flex justify-between pt-2 border-t border-slate-200/60"><span class="text-slate-500">Tempoh Pembiayaan</span><span id="res-tenure" class="font-semibold text-slate-800">-</span></div>
+                <!-- Tindakan Diperlukan Warn Card -->
+                <div v-if="results.tindakanDiperlukan" class="bg-amber-50 border border-amber-300 rounded-2xl p-4 flex gap-3 items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <div>
+                        <h4 class="text-xs font-bold text-amber-800 uppercase tracking-wide">Tindakan Diperlukan</h4>
+                        <p class="text-xs text-amber-700 font-medium mt-0.5">Perlu Selesaikan Pembiayaan Pertama Terlebih Dahulu.</p>
                     </div>
                 </div>
 
-                <!-- STACK 2: MAKLUMAT ANSURAN -->
-                <div class="space-y-3">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Maklumat Ansuran</h3>
+                <!-- Wang Beza Component -->
+                <div v-if="results.wangBeza > 0" class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex justify-between items-center">
+                    <div>
+                        <h4 class="text-xs font-bold text-indigo-900 uppercase tracking-wide">Wang Beza Diperlukan</h4>
+                        <p class="text-[10px] text-indigo-500 font-medium">Perlu disediakan tunai/KWSP oleh pemohon</p>
+                    </div>
+                    <span class="text-base font-black text-indigo-700">RM {{ formatMoney(results.wangBeza) }}</span>
+                </div>
+
+                <!-- Stack 1: Ringkasan Pembiayaan -->
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Ringkasan Pembiayaan</h4>
+                    <div class="bg-white border border-slate-100 rounded-2xl p-4 space-y-3 shadow-xs">
+                        <div class="flex justify-between text-xs"><span class="text-slate-500 font-medium">Kategori Pembiayaan</span><span class="font-bold text-slate-800">{{ results.kategori }}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-slate-500 font-medium">Jenis Pembiayaan</span><span class="font-bold text-slate-800">{{ form.currentType }}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-slate-500 font-medium">Kelayakan Maksimum</span><span class="font-bold text-teal-700">RM {{ formatMoney(results.kelayakanMaksimum) }}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-slate-500 font-medium">Kadar Keuntungan</span><span class="font-bold text-slate-800">4.00%</span></div>
+                        <hr class="border-slate-100">
+                        <div class="flex justify-between text-xs"><span class="text-slate-500 font-medium">Jumlah Pembiayaan Keseluruhan</span><span class="font-bold text-slate-900">RM {{ formatMoney(results.pembiayaanKeseluruhan) }}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-slate-400 pl-2">↳ Anggaran MRTT</span><span class="font-semibold text-slate-600">RM {{ formatMoney(results.mrtt) }}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-slate-400 pl-2">↳ Anggaran LTHT</span><span class="font-semibold text-slate-600">{{ results.ltht === 'Tidak Berkenaan' ? 'Tidak Berkenaan' : 'RM ' + formatMoney(results.ltht) }}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-slate-500 font-medium">Tempoh Pembiayaan</span><span class="font-bold text-slate-800">{{ results.tenureYears }} Tahun ({{ results.tenureMonths }} Bulan)</span></div>
+                    </div>
+                </div>
+
+                <!-- Stack 2: Maklumat Ansuran -->
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Maklumat Ansuran</h4>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-slate-50 p-3.5 rounded-xl text-center border border-slate-100 print-card">
-                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Ansuran Bulanan</span>
-                            <span id="res-ansuran" class="text-lg font-extrabold text-slate-800">RM 0</span>
+                        <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-3 text-center">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Ansuran Bulanan</span>
+                            <p class="text-base font-extrabold text-slate-800 mt-0.5">RM {{ formatMoney(results.ansuranBulanan) }}</p>
                         </div>
-                        <div class="bg-slate-50 p-3.5 rounded-xl text-center border border-slate-100 print-card">
-                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Had Ansuran Maks</span>
-                            <span id="res-had-ansuran" class="text-lg font-extrabold text-teal-700">RM 0</span>
+                        <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-3 text-center">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Had Ansuran Bulanan</span>
+                            <p class="text-base font-extrabold text-teal-700 mt-0.5">RM {{ formatMoney(results.hadAnsuran) }}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- BOTTOM FOOTER & SYSTEM NOTES -->
-                <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 space-y-2">
-                    <p id="res-catatan" class="italic text-center">Catatan Sistem: Penilaian diproses mengikut Garis Panduan Rasmi Lembaga Pembiayaan Perumahan Sektor Awam.</p>
-                    <div class="bg-slate-100 p-3 rounded-lg text-[10px] leading-relaxed text-slate-500 text-justify">
+                <!-- Footers / System Meta -->
+                <div class="text-center pt-2 space-y-3">
+                    <div class="text-[10px] text-slate-400 font-mono italic">Catatan Sistem: Penilaian berasaskan data input manual pemohon.</div>
+                    <div class="p-3 bg-slate-50 rounded-xl text-[10px] text-slate-400 leading-relaxed text-justify border border-slate-100">
                         <strong>Disclaimer:</strong> Anggaran ini adalah untuk rujukan sahaja. Nilai sebenar tertakluk kepada pengiraan rasmi LPPSA dan pihak berkaitan.
                     </div>
                 </div>
-
-                <!-- ACTION FOR PDF -->
-                <div class="no-print pt-2">
-                    <button onclick="window.print()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 shadow transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        <span>Muat Turun PDF</span>
-                    </button>
-                </div>
             </div>
+        </div>
 
-        </main>
-
-        <!-- Dynamic Persistent Bottom Navigation Wizard Controller -->
-        <footer id="wizard-navigation" class="no-print absolute bottom-0 left-0 right-0 p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center space-x-4 hidden">
-            <button id="btn-kembali" onclick="goBack()" class="px-5 py-3 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-100 transition">
-                Kembali
+        <!-- Sticky Interaction Navigation Footer -->
+        <footer v-if="step > 1" class="p-4 bg-slate-50 border-t border-slate-100 sticky bottom-0 z-40 flex gap-3">
+            <button v-if="step < 8" @click="nextStep" :disabled="!isStepValid" class="w-full bg-slate-900 disabled:bg-slate-200 text-white disabled:text-slate-400 font-bold py-3.5 px-4 rounded-xl transition duration-150 flex items-center justify-center gap-1">
+                <span>Seterusnya</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
             </button>
-            <button id="btn-seterusnya" onclick="goNext()" disabled class="flex-1 py-3 text-sm font-bold text-white bg-teal-600 rounded-xl shadow-md disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none shadow-teal-600/10 transition">
-                Seterusnya
-            </button>
+            <div v-else class="w-full grid grid-cols-2 gap-3">
+                <button @click="resetCalc" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3.5 px-4 rounded-xl text-sm transition">Mula Semula</button>
+                <button @click="generatePDF" class="bg-gradient-to-r from-teal-600 to-emerald-500 hover:opacity-95 text-white font-bold py-3.5 px-4 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <span>Muat Turun PDF</span>
+                </button>
+            </div>
         </footer>
 
-    </div>
+    </main>
+</div>
 
-    <!-- Core App Engine JavaScript Logic Layer -->
-    <script>
-        // System Data Dictionaries 
-        const LOAN_TYPES = {
-            1: "Jenis 1 - Beli rumah siap / subsale",
-            2: "Jenis 2 - Bina rumah atas tanah sendiri",
-            3: "Jenis 3 - Beli rumah under construction",
-            4: "Jenis 4 - Beli tanah",
-            5: "Jenis 5 - Settlement loan bank untuk hartanah",
-            6: "Jenis 6 - Bina rumah atas tanah yang dibeli dengan LPPSA (Loan Jenis 4)",
-            7: "Jenis 7 - Renovation rumah LPPSA"
-        };
+<script>
+const { createApp, ref, computed, watch } = Vue;
 
-        // App Reactive Global Application State Vector
-        let currentStep = 1;
-        let userData = {
-            calcMode: 'ringkas',
-            netPay: 0,
-            gajiKasar: 0,
-            elaun: 0,
-            cukaiKwsp: 0,
-            angkasa: 0,
-            umur: 0,
+createApp({
+    setup() {
+        const step = ref(1);
+
+        // Form fields state
+        const form = ref({
+            calcMode: '',
+            gajiBersihInput: null,
+            gajiKasar: null,
+            jumlahElaun: null,
+            potonganCukaiKwsp: null,
+            potonganAngkasa: null,
+            umur: null,
             jantina: '',
-            historyCount: null, // 0, 1, 2
-            prevType: null,
-            currentType: null,
-            settlementTarget: null, // Rumah, Tanah
-            loanApplied: 0
-        };
-
-        window.addEventListener('DOMContentLoaded', () => {
-            renderOptionsMarkup();
-            goToStep(1);
+            historyCount: '',
+            previousType: '',
+            currentType: '',
+            j5SettlementFor: '',
+            loanRequested: null
         });
 
-        function renderOptionsMarkup() {
-            const prevContainer = document.getElementById('prev-options-list');
-            const currentContainer = document.getElementById('current-options-list');
-            
-            prevContainer.innerHTML = '';
-            currentContainer.innerHTML = '';
+        // Setup definitions static maps
+        const loanTypes = {
+            'Jenis 1': 'Beli rumah siap / subsale',
+            'Jenis 2': 'Bina rumah atas tanah sendiri',
+            'Jenis 3': 'Beli rumah under construction',
+            'Jenis 4': 'Beli tanah',
+            'Jenis 5': 'Settlement loan bank untuk hartanah',
+            'Jenis 6': 'Bina rumah atas tanah yang dibeli dengan LPPSA (Loan Jenis 4)',
+            'Jenis 7': 'Renovation rumah LPPSA'
+        };
 
-            Object.keys(LOAN_TYPES).forEach(key => {
-                prevContainer.innerHTML += `
-                    <div>
-                        <input type="radio" id="prev-j${key}" name="prev-loan-type" value="${key}" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="handleHistorySelection()">
-                        <label for="prev-j${key}" class="block p-3 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium text-slate-700 transition hover:bg-slate-50">${LOAN_TYPES[key]}</label>
-                    </div>`;
-                
-                currentContainer.innerHTML += `
-                    <div>
-                        <input type="radio" id="curr-j${key}" name="curr-loan-type" value="${key}" class="opacity-0 absolute w-0 h-0 premium-radio" onchange="handleCurrentTypeSelection()">
-                        <label for="curr-j${key}" class="block p-3 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium text-slate-700 transition hover:bg-slate-50">${LOAN_TYPES[key]}</label>
-                    </div>`;
-            });
-        }
+        const lppsaHistoryOptions = [
+            { value: 'Belum Pernah', label: 'Belum Pernah' },
+            { value: '1', label: 'Sudah Guna 1 Kali' },
+            { value: '2', label: 'Sudah Guna 2 Kali' }
+        ];
 
-        // Router Engine Core Step-by-Step State Switcher Matrix
-        function goToStep(step) {
-            currentStep = step;
-            
-            document.querySelectorAll('.step-view').forEach(view => view.classList.add('hidden'));
-            document.getElementById(`step-${step}`).classList.remove('hidden');
+        // Calculated net pay based on detailed inputs
+        const calculatedNetPay = computed(() => {
+            const kasar = form.value.gajiKasar || 0;
+            const elaun = form.value.jumlahElaun || 0;
+            const cukai = form.value.potonganCukaiKwsp || 0;
+            const angkasa = form.value.potonganAngkasa || 0;
+            return Math.max(0, kasar + elaun - cukai - angkasa);
+        });
 
-            const navBar = document.getElementById('wizard-navigation');
-            if (step === 1) {
-                navBar.classList.add('hidden');
-            } else {
-                navBar.classList.remove('hidden');
-                document.getElementById('btn-kembali').style.visibility = (step === 2) ? 'hidden' : 'visible';
-                document.getElementById('btn-seterusnya').classList.remove('hidden');
+        const formatCalculatedNetPay = computed(() => {
+            return calculatedNetPay.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        });
+
+        // Evaluate actual Net Pay used for rules
+        const workingNetPay = computed(() => {
+            if (form.value.calcMode === 'ringkas') {
+                return form.value.gajiBersihInput || 0;
+            }
+            return calculatedNetPay.value;
+        });
+
+        // Routing adjustments to trap custom structural exceptions
+        watch(() => form.value.historyCount, (newVal) => {
+            if (newVal === '2') {
+                step.value = 8; // Directly jump to Results screen
+            }
+        });
+
+        // Dynamic labels based on selected loan codes
+        const dynamicLoanLabel = computed(() => {
+            const type = form.value.currentType;
+            if (type === 'Jenis 2' || type === 'Jenis 6') return 'Nilai Rumah Yang Ingin Dibina';
+            if (type === 'Jenis 4') return 'Nilai Tanah Yang Ingin Dibeli';
+            return 'Harga Rumah / Nilai Projek';
+        });
+
+        // Validation checker matrix per dynamic view steps
+        const isStepValid = computed(() => {
+            switch (step.value) {
+                case 2:
+                    return !!form.value.calcMode;
+                case 3:
+                    if (form.value.calcMode === 'ringkas') {
+                        return form.value.gajiBersihInput !== null && form.value.gajiBersihInput > 0;
+                    } else {
+                        return form.value.gajiKasar > 0 && form.value.potonganCukaiKwsp >= 0 && form.value.potonganAngkasa >= 0;
+                    }
+                case 4:
+                    return form.value.umur > 17 && form.value.umur <= 85 && !!form.value.jantina;
+                case 5:
+                    if (form.value.historyCount === '1') return !!form.value.previousType;
+                    return !!form.value.historyCount;
+                case 6:
+                    if (form.value.currentType === 'Jenis 5') return !!form.value.j5SettlementFor;
+                    return !!form.value.currentType;
+                case 7:
+                    return form.value.loanRequested !== null && form.value.loanRequested > 0;
+                default:
+                    return true;
+            }
+        });
+
+        // Core business logic computing engine
+        const results = computed(() => {
+            // Instantly catch 2x historical caps configuration triggers
+            if (form.value.historyCount === '2') {
+                return {
+                    status: 'TIDAK LAYAK',
+                    reasons: ['Pemohon telah menggunakan dua pembiayaan LPPSA.'],
+                    tindakanDiperlukan: false,
+                    wangBeza: 0, kategori: 'Tidak Berkenaan', kelayakanMaksimum: 0,
+                    pembiayaanKeseluruhan: 0, mrtt: 0, ltht: 'Tidak Berkenaan',
+                    tenureYears: 0, tenureMonths: 0, ansuranBulanan: 0, hadAnsuran: 0
+                };
             }
 
-            if (step === 2) validateStep2();
-            if (step === 3) validateStep3();
-            if (step === 4) validateStep4();
-            if (step === 5) validateStep5();
-            if (step === 6) handleHistorySelection();
-            if (step === 7) handleCurrentTypeSelection();
-            if (step === 8) {
-                updateDynamicPropertyLabel();
-                validateStep8();
-            }
-            if (step === 9) calculateAndRenderFinalOutput();
+            const reasons = [];
             
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function goNext() {
-            if (currentStep === 2) {
-                const mode = document.querySelector('input[name="calc-mode"]:checked').value;
-                userData.calcMode = mode;
-                if (mode === 'ringkas') goToStep(3);
-                else goToStep(4);
-            } else if (currentStep === 3) {
-                userData.netPay = parseFloat(document.getElementById('input-gaji-bersih').value) || 0;
-                goToStep(5);
-            } else if (currentStep === 4) {
-                userData.gajiKasar = parseFloat(document.getElementById('input-gaji-kasar').value) || 0;
-                userData.elaun = parseFloat(document.getElementById('input-elaun').value) || 0;
-                userData.cukaiKwsp = parseFloat(document.getElementById('input-cukai-kwsp').value) || 0;
-                userData.angkasa = parseFloat(document.getElementById('input-angkasa').value) || 0;
-                userData.netPay = userData.gajiKasar + userData.elaun - userData.cukaiKwsp - userData.angkasa;
-                goToStep(5);
-            } else if (currentStep === 5) {
-                userData.umur = parseInt(document.getElementById('input-umur').value) || 0;
-                userData.jantina = document.querySelector('input[name="gender"]:checked').value;
-                goToStep(6);
-            } else if (currentStep === 6) {
-                const histVal = document.querySelector('input[name="lppsa-history"]:checked').value;
-                userData.historyCount = parseInt(histVal);
-                if (userData.historyCount === 1) {
-                    userData.prevType = parseInt(document.querySelector('input[name="prev-loan-type"]:checked').value);
+            // 10. Category assignment rules logic
+            let kategori = 'Pembiayaan Pertama';
+            if (form.value.historyCount === '1') {
+                const prev = form.value.previousType;
+                const curr = form.value.currentType;
+                if ((prev === 'Jenis 4' || prev === 'Jenis 5') && curr === 'Jenis 6') {
+                    kategori = 'Pembiayaan Pertama';
                 } else {
-                    userData.prevType = null;
-                }
-
-                if (userData.historyCount === 2) {
-                    goToStep(9); 
-                } else {
-                    goToStep(7);
-                }
-            } else if (currentStep === 7) {
-                userData.currentType = parseInt(document.querySelector('input[name="curr-loan-type"]:checked').value);
-                if (userData.currentType === 5) {
-                    userData.settlementTarget = document.querySelector('input[name="settlement-target"]:checked').value;
-                } else {
-                    userData.settlementTarget = null;
-                }
-                goToStep(8);
-            } else if (currentStep === 8) {
-                userData.loanApplied = parseFloat(document.getElementById('input-loan-applied').value) || 0;
-                goToStep(9);
-            }
-        }
-
-        function goBack() {
-            if (currentStep === 5) {
-                if (userData.calcMode === 'ringkas') goToStep(3);
-                else goToStep(4);
-            } else if (currentStep === 7) {
-                goToStep(6);
-            } else if (currentStep === 9 && userData.historyCount === 2) {
-                goToStep(6);
-            } else {
-                goToStep(currentStep - 1);
-            }
-        }
-
-        function setNextButtonState(isValid) {
-            document.getElementById('btn-seterusnya').disabled = !isValid;
-        }
-
-        function validateStep2() {
-            setNextButtonState(document.querySelector('input[name="calc-mode"]:checked') !== null);
-        }
-
-        function validateStep3() {
-            const val = parseFloat(document.getElementById('input-gaji-bersih').value);
-            setNextButtonState(!isNaN(val) && val > 0);
-        }
-
-        function validateStep4() {
-            const gk = parseFloat(document.getElementById('input-gaji-kasar').value);
-            const el = parseFloat(document.getElementById('input-elaun').value);
-            const ck = parseFloat(document.getElementById('input-cukai-kwsp').value);
-            const ak = parseFloat(document.getElementById('input-angkasa').value);
-            
-            const allFilled = (!isNaN(gk) && gk >= 0) && (!isNaN(el) && el >= 0) && (!isNaN(ck) && ck >= 0) && (!isNaN(ak) && ak >= 0);
-            setNextButtonState(allFilled && (gk + el > 0));
-        }
-
-        function validateStep5() {
-            const age = parseInt(document.getElementById('input-umur').value);
-            const genderChecked = document.querySelector('input[name="gender"]:checked') !== null;
-            setNextButtonState(!isNaN(age) && age > 0 && genderChecked);
-        }
-
-        function handleHistorySelection() {
-            const histRadio = document.querySelector('input[name="lppsa-history"]:checked');
-            const subContainer = document.getElementById('prev-loan-type-container');
-            
-            if (!histRadio) {
-                setNextButtonState(false);
-                return;
-            }
-
-            const val = parseInt(histRadio.value);
-            if (val === 1) {
-                subContainer.classList.remove('hidden');
-                const prevTypeRadio = document.querySelector('input[name="prev-loan-type"]:checked');
-                setNextButtonState(prevTypeRadio !== null);
-            } else {
-                subContainer.classList.add('hidden');
-                setNextButtonState(true);
-            }
-        }
-
-        function handleCurrentTypeSelection() {
-            const currentRadio = document.querySelector('input[name="curr-loan-type"]:checked');
-            const j5Container = document.getElementById('j5-settlement-container');
-            
-            if (!currentRadio) {
-                setNextButtonState(false);
-                return;
-            }
-
-            const val = parseInt(currentRadio.value);
-            if (val === 5) {
-                j5Container.classList.remove('hidden');
-                const targetChecked = document.querySelector('input[name="settlement-target"]:checked') !== null;
-                setNextButtonState(targetChecked);
-            } else {
-                j5Container.classList.add('hidden');
-                setNextButtonState(true);
-            }
-        }
-
-        function validateStep7() {
-            handleCurrentTypeSelection();
-        }
-
-        function updateDynamicPropertyLabel() {
-            const label = document.getElementById('dynamic-property-label');
-            const type = userData.currentType;
-            if (type === 2 || type === 6) {
-                label.textContent = "Nilai Rumah Yang Ingin Dibina (RM)";
-            } else if (type === 4) {
-                label.textContent = "Nilai Tanah Yang Ingin Dibeli (RM)";
-            } else {
-                label.textContent = "Harga Rumah / Nilai Projek (RM)";
-            }
-        }
-
-        function validateStep8() {
-            const val = parseFloat(document.getElementById('input-loan-applied').value);
-            const isValid = !isNaN(val) && val > 0;
-            
-            const mirroredField = document.getElementById('input-property-value');
-            if (isValid) mirroredField.value = val;
-            else mirroredField.value = 0;
-            
-            setNextButtonState(isValid);
-        }
-
-        function calculateAndRenderFinalOutput() {
-            const statusCardBox = document.getElementById('status-card-box');
-            const statusText = document.getElementById('res-status-text');
-            const reasonsBox = document.getElementById('res-reasons-box');
-            const reasonsList = document.getElementById('res-reasons-list');
-            const warningBox = document.getElementById('res-warning-box');
-            const wangBexaBox = document.getElementById('res-wangbeza-box');
-            const wangBexaVal = document.getElementById('res-wangbeza-val');
-            
-            reasonsBox.classList.add('hidden');
-            reasonsList.innerHTML = '';
-            warningBox.classList.add('hidden');
-            wangBexaBox.classList.add('hidden');
-            document.getElementById('btn-seterusnya').classList.add('hidden'); 
-
-            if (userData.historyCount === 2) {
-                statusCardBox.className = "p-5 rounded-2xl text-center shadow-sm border print-card bg-red-50/50 border-red-200 text-red-900";
-                statusText.className = "text-3xl font-black tracking-tight text-red-700";
-                statusText.textContent = "TIDAK LAYAK";
-                
-                reasonsBox.classList.remove('hidden');
-                reasonsList.innerHTML = `<li>Pemohon telah menggunakan dua pembiayaan LPPSA.</li>`;
-                
-                document.getElementById('res-kategori').textContent = "Tidak Berkenaan";
-                document.getElementById('res-jenis').textContent = "Tidak Berkenaan";
-                document.getElementById('res-max-elig').textContent = "RM 0.00";
-                document.getElementById('res-rate').textContent = "4.00%";
-                document.getElementById('res-total-loan').textContent = "RM 0.00";
-                document.getElementById('res-mrtt').textContent = "RM 0.00";
-                document.getElementById('res-ltht').textContent = "Tidak Berkenaan";
-                document.getElementById('res-tenure').textContent = "0 Tahun";
-                document.getElementById('res-ansuran').textContent = "RM 0.00";
-                document.getElementById('res-had-ansuran').textContent = "RM 0.00";
-                return;
-            }
-
-            let kategoriPembiayaan = "Pembiayaan Pertama"; 
-            if (userData.historyCount === 1) {
-                const isPreviousJ4OrJ5 = (userData.prevType === 4 || userData.prevType === 5);
-                const isCurrentJ6 = (userData.currentType === 6);
-                
-                if (isPreviousJ4OrJ5 && isCurrentJ6) {
-                    kategoriPembiayaan = "Pembiayaan Pertama";
-                } else {
-                    kategoriPembiayaan = "Pembiayaan Kedua";
+                    kategori = 'Pembiayaan Kedua';
                 }
             }
 
-            if (kategoriPembiayaan === "Pembiayaan Kedua") {
-                let isRelatedCombo = false;
-                if ((userData.prevType === 1 && userData.currentType === 7) || 
-                    (userData.prevType === 3 && userData.currentType === 7)) {
-                    isRelatedCombo = true;
-                }
-                
-                const isComboJ4ToJ6 = (userData.prevType === 4 && userData.currentType === 6);
-                const isComboJ5ToJ6 = (userData.prevType === 5 && userData.currentType === 6);
-                if (isComboJ4ToJ6 || isComboJ5ToJ6) {
-                    isRelatedCombo = true;
-                }
-
-                if (!isRelatedCombo) {
-                    warningBox.classList.remove('hidden');
+            // 11. Tindakan Diperlukan Rule Engine
+            let tindakanDiperlukan = false;
+            if (kategori === 'Pembiayaan Kedua') {
+                const prev = form.value.previousType;
+                const curr = form.value.currentType;
+                const isException1 = (prev === 'Jenis 1' && curr === 'Jenis 7');
+                const isException2 = (prev === 'Jenis 3' && curr === 'Jenis 7');
+                if (!isException1 && !isException2) {
+                    tindakanDiperlukan = true;
                 }
             }
 
-            let tenureY = (kategoriPembiayaan === "Pembiayaan Pertama") ? 35 : 30;
-            let tenureM = tenureY * 12;
-            let percentageCap = (kategoriPembiayaan === "Pembiayaan Pertama") ? 0.60 : 0.50;
-            let hadAnsuranBulanan = percentageCap * userData.netPay;
+            // 9. Tenure configuration parameters assignments
+            const tenureYears = (kategori === 'Pembiayaan Pertama') ? 35 : 30;
+            const tenureMonths = tenureYears * 12;
+            const hadAnsuranBulananFactor = (kategori === 'Pembiayaan Pertama') ? 0.60 : 0.50;
+            const hadAnsuran = workingNetPay.value * hadAnsuranBulananFactor;
 
-            let rawMaxElig = userData.netPay * 0.60 * 200;
-            let typeModifier = (userData.currentType === 4 || userData.currentType === 5) ? 0.50 : 1.00;
-            let kelayakanMaksimum = rawMaxElig * typeModifier;
+            // Kelayakan Maksimum computation rules variables parsing
+            let rawKelayakanMax = workingNetPay.value * 0.60 * 200;
+            if (form.value.currentType === 'Jenis 4' || form.value.currentType === 'Jenis 5') {
+                rawKelayakanMax = rawKelayakanMax * 0.50;
+            }
+            const kelayakanMaksimum = rawKelayakanMax;
 
-            let ageRate = 0.80; 
-            let age = userData.umur;
+            // 12. Compulsory MRTT Protection Premium Matrix Formulation
+            let ageRate = 0.80;
+            const age = form.value.umur || 0;
             if (age <= 30) ageRate = 0.28;
             else if (age <= 35) ageRate = 0.32;
             else if (age <= 40) ageRate = 0.38;
             else if (age <= 45) ageRate = 0.48;
             else if (age <= 50) ageRate = 0.65;
-            
-            let genderFactor = (userData.jantina === "Lelaki") ? 1.00 : 0.67;
-            let anggaranMRTT = userData.loanApplied * (ageRate / 100) * tenureY * genderFactor;
 
-            let isLTHTApplicable = true;
-            if (userData.currentType === 4) isLTHTApplicable = false;
-            if (userData.currentType === 5 && userData.settlementTarget === "Tanah") isLTHTApplicable = false;
+            const genderFactor = (form.value.jantina === 'Perempuan') ? 0.67 : 1.00;
+            const loanRequested = form.value.loanRequested || 0;
+            const mrtt = loanRequested * (ageRate / 100) * tenureYears * genderFactor;
 
-            let anggaranLTHT = 0;
-            if (isLTHTApplicable) {
-                let multiplier = (anggaranMRTT < 100000) ? 0.42 : 0.48;
-                anggaranLTHT = anggaranMRTT * multiplier;
+            // 13. LTHT Premium assessment rules
+            let lthtApplies = false;
+            const type = form.value.currentType;
+            if (['Jenis 1', 'Jenis 2', 'Jenis 3', 'Jenis 6', 'Jenis 7'].includes(type)) {
+                lthtApplies = true;
+            } else if (type === 'Jenis 5' && form.value.j5SettlementFor === 'Rumah') {
+                lthtApplies = true;
             }
 
-            let jumlahPembiayaanKeseluruhan = userData.loanApplied + anggaranMRTT + anggaranLTHT;
-
-            let P = jumlahPembiayaanKeseluruhan;
-            let r = 0.04 / 12;
-            let n = tenureM;
-            let ansuranBulanan = P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
-
-            let isLayak = true;
-            let failureReasons = [];
-            let wangBezaValue = 0;
-
-            if (userData.loanApplied > kelayakanMaksimum) {
-                isLayak = false;
-                failureReasons.push("Jumlah pembiayaan dipohon melebihi kelayakan maksimum.");
-                wangBezaValue = userData.loanApplied - kelayakanMaksimum;
+            let ltht = 'Tidak Berkenaan';
+            if (lthtApplies) {
+                const multiplier = (mrtt < 100000) ? 0.42 : 0.48;
+                ltht = mrtt * multiplier;
             }
 
-            if (ansuranBulanan > hadAnsuranBulanan) {
-                isLayak = false;
-                if (kategoriPembiayaan === "Pembiayaan Pertama") {
-                    failureReasons.push("Ansuran bulanan melebihi 60% daripada Gaji Bersih.");
+            // 14. Monthly Instalment Calculations via standard Balance Reducing Equation
+            const lthtValue = (typeof ltht === 'number') ? ltht : 0;
+            const pembiayaanKeseluruhan = loanRequested + mrtt + lthtValue;
+
+            const r = 0.04 / 12;
+            const n = tenureMonths;
+            let ansuranBulanan = 0;
+            if (pembiayaanKeseluruhan > 0) {
+                ansuranBulanan = pembiayaanKeseluruhan * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+            }
+
+            // 15. Eligibility Result Status Determinations Engine
+            let status = 'LAYAK';
+            let wangBeza = 0;
+
+            if (loanRequested > kelayakanMaksimum) {
+                status = 'TIDAK LAYAK';
+                reasons.push('Jumlah pembiayaan dipohon melebihi kelayakan maksimum.');
+                wangBeza = loanRequested - kelayakanMaksimum;
+            }
+
+            if (ansuranBulanan > hadAnsuran) {
+                status = 'TIDAK LAYAK';
+                if (kategori === 'Pembiayaan Pertama') {
+                    reasons.push('Ansuran bulanan melebihi 60% daripada Gaji Bersih.');
                 } else {
-                    failureReasons.push("Ansuran bulanan melebihi 50% daripada Gaji Bersih.");
+                    reasons.push('Ansuran bulanan melebihi 50% daripada Gaji Bersih.');
                 }
             }
 
-            if (isLayak) {
-                statusCardBox.className = "p-5 rounded-2xl text-center shadow-sm border print-card bg-teal-50 border-teal-200 text-teal-900";
-                statusText.className = "text-3xl font-black tracking-tight text-teal-700";
-                statusText.textContent = "LAYAK";
-            } else {
-                statusCardBox.className = "p-5 rounded-2xl text-center shadow-sm border print-card bg-red-50/50 border-red-200 text-red-900";
-                statusText.className = "text-3xl font-black tracking-tight text-red-700";
-                statusText.textContent = "TIDAK LAYAK";
-                
-                reasonsBox.classList.remove('hidden');
-                failureReasons.forEach(reason => {
-                    reasonsList.innerHTML += `<li>${reason}</li>`;
-                });
+            return {
+                status,
+                reasons,
+                tindakanDiperlukan,
+                wangBeza,
+                kategori,
+                kelayakanMaksimum,
+                pembiayaanKeseluruhan,
+                mrtt,
+                ltht,
+                tenureYears,
+                tenureMonths,
+                ansuranBulanan,
+                hadAnsuran
+            };
+        });
 
-                if (wangBezaValue > 0) {
-                    wangBexaBox.classList.remove('hidden');
-                    wangBexaVal.textContent = formatCurrency(wangBezaValue);
-                }
+        // Navigation UI functions methods
+        const nextStep = () => { if (step.value < 8) step.value++; };
+        const prevStep = () => {
+            if (step.value === 8 && form.value.historyCount === '2') {
+                step.value = 5; // Return to step 5 safely bypassing
+                return;
             }
+            if (step.value > 1) step.value--;
+        };
 
-            document.getElementById('res-kategori').textContent = kategoriPembiayaan;
-            document.getElementById('res-jenis').textContent = LOAN_TYPES[userData.currentType];
-            document.getElementById('res-max-elig').textContent = formatCurrency(kelayakanMaksimum);
-            document.getElementById('res-rate').textContent = "4.00%";
-            document.getElementById('res-total-loan').textContent = formatCurrency(jumlahPembiayaanKeseluruhan);
-            document.getElementById('res-mrtt').textContent = formatCurrency(anggaranMRTT);
-            document.getElementById('res-ltht').textContent = isLTHTApplicable ? formatCurrency(anggaranLTHT) : "Tidak Berkenaan";
-            document.getElementById('res-tenure').textContent = `${tenureY} Tahun (${tenureM} Bulan)`;
-            document.getElementById('res-ansuran').textContent = formatCurrency(ansuranBulanan);
-            document.getElementById('res-had-ansuran').textContent = formatCurrency(hadAnsuranBulanan);
-        }
+        const resetCalc = () => {
+            step.value = 1;
+            form.value = {
+                calcMode: '', gajiBersihInput: null, gajiKasar: null, jumlahElaun: null,
+                potonganCukaiKwsp: null, potonganAngkasa: null, umur: null, jantina: '',
+                historyCount: '', previousType: '', currentType: '', j5SettlementFor: '', loanRequested: null
+            };
+        };
 
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('en-MY', { style: 'currency', currency: 'MYR' }).format(value);
-        }
-    </script>
+        // Money Display Formatting Utility function
+        const formatMoney = (val) => {
+            if (typeof val !== 'number') return '0.00';
+            return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        };
+
+        // 17. Professional client PDF render extraction engine function
+        const generatePDF = () => {
+            const element = document.getElementById('pdf-container');
+            const opt = {
+                margin:       10,
+                filename:     `LPPSA_Smart_Calculator_Result.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().from(element).set(opt).save();
+        };
+
+        return {
+            step, form, loanTypes, lppsaHistoryOptions, calculatedNetPay,
+            formatCalculatedNetPay, dynamicLoanLabel, isStepValid, results,
+            nextStep, prevStep, resetCalc, formatMoney, generatePDF
+        };
+    }
+}).mount('#app');
+</script>
 </body>
 </html>
